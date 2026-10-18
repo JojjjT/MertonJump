@@ -29,10 +29,17 @@ jobs:
       - name: Instalar marimo
         run: pip install marimo
 
-      - name: Exportar a WebAssembly (modo presentación, sin código)
+      # 🔎 Paso de diagnóstico clave: detecta incompatibilidades WASM
+      - name: Verificar compatibilidad con WebAssembly
+        run: marimo check merton_externado.py --select MW
+        continue-on-error: true   # No bloquea el workflow, pero muestra los errores en el log
+
+      # 📦 Exportación (aquí es donde suele ocurrir el exit code 1)
+      - name: Exportar a WebAssembly
         run: marimo export html-wasm merton_externado.py -o _site --mode run --no-show-code
 
-      - name: Verificar contenido de _site (diagnóstico)
+      # 📋 Diagnóstico: verifica que se generó contenido
+      - name: Verificar contenido de _site
         run: ls -la _site
 
       - name: Subir artifact de Pages
