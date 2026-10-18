@@ -16,26 +16,37 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04   # 暂时锁定 24.04，避免 26.04 自动迁移带来的不确定性
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5          # Node 24 兼容
-      - uses: actions/setup-python@v6      # Node 24 兼容
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+
       - name: Instalar marimo
         run: pip install marimo
+
       - name: Exportar a WebAssembly (modo presentación, sin código)
         run: marimo export html-wasm merton_externado.py -o _site --mode run --no-show-code
-      - uses: actions/upload-pages-artifact@v5   # Node 24 兼容
+
+      - name: Verificar contenido de _site (diagnóstico)
+        run: ls -la _site
+
+      - name: Subir artifact de Pages
+        uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
   deploy:
     needs: build
-    runs-on: ubuntu-24.04   # 与 build 保持一致
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
-        uses: actions/deploy-pages@v5          # Node 24 兼容
+      - name: Deploy a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
