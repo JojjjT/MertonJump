@@ -3,6 +3,9 @@ name: Publicar en GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - 'merton_externado.py'
+      - 'merton_externado_marp.html'
   workflow_dispatch:
 
 permissions:
@@ -26,14 +29,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Instalar uv
-        run: pip install uv
+      - name: Instalar uv y marimo
+        run: pip install uv marimo
 
-      - name: Instalar marimo
-        run: pip install marimo
-
-      - name: Exportar a WebAssembly (modo presentación, sin código)
+      - name: Exportar notebook marimo a WebAssembly
         run: marimo export html-wasm merton_externado.py -o _site --mode run --no-show-code
+
+      - name: Copiar presentación Marp a _site
+        run: cp merton_externado_marp.html _site/
 
       - name: Verificar contenido de _site
         run: ls -la _site
