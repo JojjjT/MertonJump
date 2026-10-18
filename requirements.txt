@@ -1,0 +1,4 @@
+marimo>=0.25
+numpy
+scipy
+matplotlib
